@@ -43,4 +43,14 @@ class CircularBuffer<T> {
 
   bool get filled => (_count == _buf.length);
   bool get unfilled => (_count < _buf.length);
+
+  /// Allows you to iterate over the contents of the buffer
+  /// The [action] callback is called for each item in the 
+  /// buffer.
+  void forEach(void Function(T) action) {
+    for (var i = _start; i < _start + _count; i++) {
+      var val = _buf[i % len];
+      action(val);
+    }
+  }
 }
