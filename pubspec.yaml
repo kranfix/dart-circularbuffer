@@ -1,6 +1,10 @@
 name: circular_buffer
-version: 0.5.0
+version: 0.6.0
 description: A Dart Circular Buffer container
 author: Frank Moreno <frankmoreno1993@gmail.com>
 homepage: http://www.github.com/kranfix/dart-circularbuffer
 documentation: http://www.github.com/kranfix/dart-circularbuffer#readme
+
+
+environment:
+  sdk: '>=2.6.0 <3.0.0'
