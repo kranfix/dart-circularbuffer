@@ -4,4 +4,4 @@ description: A Dart Circular Buffer container
 homepage: http://www.github.com/kranfix/dart-circularbuffer
 documentation: http://www.github.com/kranfix/dart-circularbuffer#readme
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
