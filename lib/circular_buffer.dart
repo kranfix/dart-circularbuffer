@@ -7,17 +7,17 @@ class CircularBuffer<T> with ListMixin<T> {
   int _end;
   int _count;
 
-  CircularBuffer(int n) {
-    _buf = new List<T>(n);
+  CircularBuffer(int capacity) : _buf = List<T>(capacity) {
     reset();
   }
 
-  reset() {
+  void reset() {
     _start = 0;
     _end = -1;
     _count = 0;
   }
 
+  @override
   void add(T el) {
     // Adding the next value
     _end++;
@@ -47,19 +47,21 @@ class CircularBuffer<T> with ListMixin<T> {
   bool get isFilled => (_count == _buf.length);
   bool get isUnfilled => (_count < _buf.length);
 
-  T operator [] (int index) {
-    if(index > _count) throw RangeError.index(index, this);
+  @override
+  T operator [](int index) {
+    if (index > _count) throw RangeError.index(index, this);
 
     return _buf[(_start + index) % _buf.length];
   }
 
-  void operator []= (int index, T value) {
-    if(index > _count) throw RangeError.index(index, this);
+  @override
+  void operator []=(int index, T value) {
+    if (index > _count) throw RangeError.index(index, this);
 
     _buf[(_start + index) % _buf.length] = value;
   }
 
   set length(int newLength) {
-    throw new UnsupportedError("Cannot resize immutable CircularBuffer.");
+    throw UnsupportedError('Cannot resize immutable CircularBuffer.');
   }
 }
