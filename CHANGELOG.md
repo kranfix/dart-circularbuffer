@@ -1,3 +1,8 @@
+# 0.8.0
+
+- The `CircularBuffer` mininum capacity is 2
+- Adding tests
+
 # 0.7.0
 
 - `CircularBuffer` support ListMixin
