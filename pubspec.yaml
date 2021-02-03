@@ -1,7 +1,7 @@
 name: circular_buffer
-version: 0.7.0
+version: 0.7.1
 description: A Dart Circular Buffer container
-homepage: http://www.github.com/kranfix/dart-circularbuffer
-documentation: http://www.github.com/kranfix/dart-circularbuffer#readme
+homepage: https://www.github.com/kranfix/dart-circularbuffer
+documentation: https://www.github.com/kranfix/dart-circularbuffer#readme
 environment:
   sdk: ">=2.10.0 <3.0.0"
