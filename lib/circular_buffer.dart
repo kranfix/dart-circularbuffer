@@ -2,15 +2,19 @@ import 'dart:collection';
 
 /// Supports all [List] operations
 class CircularBuffer<T> with ListMixin<T> {
-  List<T> _buf;
-  int _start;
-  int _end;
-  int _count;
-
-  CircularBuffer(int capacity) : _buf = List<T>(capacity) {
+  /// Creates a [CircularBuffer] with a `capacity`
+  CircularBuffer(int capacity)
+      : assert(capacity != null),
+        _buf = List<T>(capacity) {
     reset();
   }
 
+  final List<T> _buf;
+  int _start = 0;
+  int _end = -1;
+  int _count = 0;
+
+  /// The [CircularBuffer] is `reset`
   void reset() {
     _start = 0;
     _end = -1;
@@ -18,13 +22,13 @@ class CircularBuffer<T> with ListMixin<T> {
   }
 
   @override
-  void add(T el) {
+  void add(T element) {
     // Adding the next value
     _end++;
     if (_end == _buf.length) {
       _end = 0;
     }
-    _buf[_end] = el;
+    _buf[_end] = element;
 
     // updating the start
     if (_count < _buf.length) {
@@ -39,18 +43,23 @@ class CircularBuffer<T> with ListMixin<T> {
   }
 
   /// Number of elements of [CircularBuffer]
+  @override
   int get length => _count;
 
   /// Maximum number of elements of [CircularBuffer]
   int get capacity => _buf.length;
 
+  /// The [CircularBuffer] `isFilled`  if the `length`
+  /// is equal to the `capacity`
   bool get isFilled => (_count == _buf.length);
+
+  /// The [CircularBuffer] `isUnfilled`  if the `length` is
+  /// is less than the `capacity`
   bool get isUnfilled => (_count < _buf.length);
 
   @override
   T operator [](int index) {
     if (index > _count) throw RangeError.index(index, this);
-
     return _buf[(_start + index) % _buf.length];
   }
 
@@ -61,6 +70,8 @@ class CircularBuffer<T> with ListMixin<T> {
     _buf[(_start + index) % _buf.length] = value;
   }
 
+  /// The `length` mutation is forbidden
+  @override
   set length(int newLength) {
     throw UnsupportedError('Cannot resize immutable CircularBuffer.');
   }
