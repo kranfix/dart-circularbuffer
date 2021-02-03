@@ -4,7 +4,7 @@ import 'dart:collection';
 class CircularBuffer<T> with ListMixin<T> {
   /// Creates a [CircularBuffer] with a `capacity`
   CircularBuffer(int capacity)
-      : assert(capacity != null),
+      : assert(capacity != null && capacity > 1),
         _buf = List<T>(capacity) {
     reset();
   }
@@ -59,15 +59,18 @@ class CircularBuffer<T> with ListMixin<T> {
 
   @override
   T operator [](int index) {
-    if (index > _count) throw RangeError.index(index, this);
-    return _buf[(_start + index) % _buf.length];
+    if (index >= 0 && index < _count) {
+      return _buf[(_start + index) % _buf.length];
+    }
+    throw RangeError.index(index, this);
   }
 
   @override
   void operator []=(int index, T value) {
-    if (index > _count) throw RangeError.index(index, this);
-
-    _buf[(_start + index) % _buf.length] = value;
+    if (index >= 0 && index < _count) {
+      _buf[(_start + index) % _buf.length] = value;
+    }
+    throw RangeError.index(index, this);
   }
 
   /// The `length` mutation is forbidden
