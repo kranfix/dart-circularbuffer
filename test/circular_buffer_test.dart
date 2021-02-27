@@ -3,12 +3,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('Creating a CircularBuffer', () {
-    test('with null capacity throws an error', () {
-      expect(() {
-        CircularBuffer<int>(null);
-      }, throwsA(isA<AssertionError>()));
-    });
-
     test('with zero or one element capacity', () {
       expect(() {
         CircularBuffer<int>(0);
