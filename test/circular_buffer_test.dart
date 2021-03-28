@@ -181,4 +181,17 @@ void main() {
       buffer.length = 1;
     }, throwsA(isA<UnsupportedError>()));
   });
+
+  group('border conditions', () {
+    test('is filled or unfilled', () {
+      final buffer = CircularBuffer<int>(3)..add(1)..add(2);
+
+      expect(buffer.isFilled, false);
+      expect(buffer.isUnfilled, true);
+
+      buffer.add(3);
+      expect(buffer.isFilled, true);
+      expect(buffer.isUnfilled, false);
+    });
+  });
 }
