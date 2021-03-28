@@ -1,3 +1,8 @@
+# 0.9.0
+
+- Migrating to null-safety (Thanks to @shyndman)
+- Adding test for border conditions
+
 # 0.8.0
 
 - The `CircularBuffer` mininum capacity is 2
