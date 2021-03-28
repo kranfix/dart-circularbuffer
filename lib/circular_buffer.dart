@@ -4,12 +4,12 @@ import 'dart:collection';
 class CircularBuffer<T> with ListMixin<T> {
   /// Creates a [CircularBuffer] with a `capacity`
   CircularBuffer(int capacity)
-      : assert(capacity != null && capacity > 1),
-        _buf = List<T>(capacity) {
-    reset();
-  }
+      : assert(capacity > 1),
+        _capacity = capacity,
+        _buf = [];
 
   final List<T> _buf;
+  final int _capacity;
   int _start = 0;
   int _end = -1;
   int _count = 0;
@@ -25,13 +25,13 @@ class CircularBuffer<T> with ListMixin<T> {
   void add(T element) {
     // Adding the next value
     _end++;
-    if (_end == _buf.length) {
+    if (_end == _capacity) {
       _end = 0;
     }
-    _buf[_end] = element;
-
-    // updating the start
-    if (_count < _buf.length) {
+    if (isFilled) {
+      _buf[_end] = element;
+    } else {
+      _buf.add(element);
       _count++;
       return;
     }
@@ -47,20 +47,20 @@ class CircularBuffer<T> with ListMixin<T> {
   int get length => _count;
 
   /// Maximum number of elements of [CircularBuffer]
-  int get capacity => _buf.length;
+  int get capacity => _capacity;
 
   /// The [CircularBuffer] `isFilled`  if the `length`
   /// is equal to the `capacity`
-  bool get isFilled => (_count == _buf.length);
+  bool get isFilled => (_count == _capacity);
 
   /// The [CircularBuffer] `isUnfilled`  if the `length` is
   /// is less than the `capacity`
-  bool get isUnfilled => (_count < _buf.length);
+  bool get isUnfilled => (_count < _capacity);
 
   @override
   T operator [](int index) {
     if (index >= 0 && index < _count) {
-      return _buf[(_start + index) % _buf.length];
+      return _buf[(_start + index) % _buf.length]!;
     }
     throw RangeError.index(index, this);
   }
@@ -69,8 +69,9 @@ class CircularBuffer<T> with ListMixin<T> {
   void operator []=(int index, T value) {
     if (index >= 0 && index < _count) {
       _buf[(_start + index) % _buf.length] = value;
+    } else {
+      throw RangeError.index(index, this);
     }
-    throw RangeError.index(index, this);
   }
 
   /// The `length` mutation is forbidden
