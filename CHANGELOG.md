@@ -1,3 +1,8 @@
+# 0.9.1
+
+- Adding documentation to `CircularBuffer` class
+- Adding example to README
+
 # 0.9.0
 
 - Migrating to null-safety (Thanks to @shyndman)
