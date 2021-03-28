@@ -193,5 +193,20 @@ void main() {
       expect(buffer.isFilled, true);
       expect(buffer.isUnfilled, false);
     });
+
+    test('first internal index is retarted', () {
+      final buffer = CircularBuffer<int>(3)..add(1)..add(2)..add(3);
+
+      expect(buffer.first, 1);
+
+      buffer.add(4);
+      expect(buffer.first, 2);
+
+      buffer.add(5);
+      expect(buffer.first, 3);
+
+      buffer.add(6);
+      expect(buffer.first, 4);
+    });
   });
 }
