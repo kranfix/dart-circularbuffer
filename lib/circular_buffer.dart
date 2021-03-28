@@ -37,7 +37,7 @@ class CircularBuffer<T> with ListMixin<T> {
     }
 
     _start++;
-    if (_start == _buf.length) {
+    if (_start == _capacity) {
       _start = 0;
     }
   }
