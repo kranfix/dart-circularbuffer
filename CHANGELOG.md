@@ -1,3 +1,7 @@
+# 0.10.0 - 2021-08-13
+
+- Adding constructtor `CircularBuffer.of(List<T> list, [int? capacity])`.
+
 # 0.9.1
 
 - Adding documentation to `CircularBuffer` class
