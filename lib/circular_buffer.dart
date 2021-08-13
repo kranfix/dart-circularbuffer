@@ -78,11 +78,11 @@ class CircularBuffer<T> with ListMixin<T> {
 
   /// The [CircularBuffer] `isFilled`  if the `length`
   /// is equal to the `capacity`
-  bool get isFilled => (_count == _capacity);
+  bool get isFilled => _count == _capacity;
 
   /// The [CircularBuffer] `isUnfilled`  if the `length` is
   /// is less than the `capacity`
-  bool get isUnfilled => (_count < _capacity);
+  bool get isUnfilled => _count < _capacity;
 
   @override
   T operator [](int index) {
