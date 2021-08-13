@@ -22,13 +22,24 @@ class CircularBuffer<T> with ListMixin<T> {
   CircularBuffer(int capacity)
       : assert(capacity > 1),
         _capacity = capacity,
-        _buf = [];
+        _buf = [],
+        _end = -1,
+        _count = 0;
+
+  /// Creates a [CircularBuffer] based on another `list`
+  CircularBuffer.of(List<T> list, [int? capacity])
+      : assert(capacity == null || capacity >= list.length),
+        _capacity = capacity ?? list.length,
+        _buf = [...list],
+        _end = list.length - 1,
+        _count = list.length;
 
   final List<T> _buf;
   final int _capacity;
+
   int _start = 0;
-  int _end = -1;
-  int _count = 0;
+  int _end;
+  int _count;
 
   /// The [CircularBuffer] is `reset`
   void reset() {
