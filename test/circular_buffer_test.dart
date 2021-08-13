@@ -87,6 +87,66 @@ void main() {
     });
   });
 
+  group('Creating a CircularBuffer.of()', () {
+    test('with zero or one element capacity', () {
+      final cb1 = CircularBuffer<int>.of([]);
+      expect(cb1.length, 0);
+      expect(cb1.capacity, 0);
+
+      final cb2 = CircularBuffer<int>.of([], 1);
+      expect(cb2.length, 0);
+      expect(cb2.capacity, 1);
+    });
+
+    test('when capacity is less than length, throws an error', () {
+      expect(
+        () {
+          CircularBuffer<int>.of([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3);
+        },
+        throwsA(isA<AssertionError>()),
+      );
+    });
+
+    test('and adding some elements', () {
+      final buffer = CircularBuffer<int>.of([4, 5, 6], 5);
+      expect(buffer.length, 3);
+      expect(buffer.capacity, 5);
+
+      expect(() {
+        return buffer[-1];
+      }, throwsA(isA<RangeError>()));
+
+      expect(buffer.length, 3);
+      expect(buffer[0], 4);
+      expect(buffer[1], 5);
+      expect(buffer[2], 6);
+      expect(() {
+        return buffer[3];
+      }, throwsA(isA<RangeError>()));
+
+      buffer.add(7);
+      expect(buffer.length, 4);
+      expect(buffer[0], 4);
+      expect(buffer[1], 5);
+      expect(buffer[2], 6);
+      expect(buffer[3], 7);
+      expect(() {
+        return buffer[4];
+      }, throwsA(isA<RangeError>()));
+
+      buffer.add(8);
+      expect(buffer.length, 5);
+      expect(buffer[0], 4);
+      expect(buffer[1], 5);
+      expect(buffer[2], 6);
+      expect(buffer[3], 7);
+      expect(buffer[4], 8);
+      expect(() {
+        return buffer[5];
+      }, throwsA(isA<RangeError>()));
+    });
+  });
+
   test('when adding more elements than capacity', () {
     final buffer = CircularBuffer<int>(5)
       ..add(1)
