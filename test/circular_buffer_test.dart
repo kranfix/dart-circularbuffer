@@ -269,4 +269,9 @@ void main() {
       expect(buffer.first, 4);
     });
   });
+
+  test('nullable elements', () {
+    final buffer = CircularBuffer<int?>(3)..add(null)..add(2);
+    expect(buffer, <int?>[null, 2]);
+  });
 }

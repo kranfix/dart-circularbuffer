@@ -19,82 +19,78 @@ import 'dart:collection';
 /// ```
 class CircularBuffer<T> with ListMixin<T> {
   /// Creates a [CircularBuffer] with a `capacity`
-  CircularBuffer(int capacity)
-      : assert(capacity > 1),
-        _capacity = capacity,
-        _buf = [],
-        _end = -1,
-        _count = 0;
+  CircularBuffer(this.capacity)
+      : assert(capacity > 1, 'CircularBuffer must have a positive capacity.'),
+        _buf = [];
 
   /// Creates a [CircularBuffer] based on another `list`
   CircularBuffer.of(List<T> list, [int? capacity])
-      : assert(capacity == null || capacity >= list.length),
-        _capacity = capacity ?? list.length,
-        _buf = [...list],
-        _end = list.length - 1,
-        _count = list.length;
+      : assert(
+          capacity == null || capacity >= list.length,
+          'The capacity must be at least as long as the existing list',
+        ),
+        capacity = capacity ?? list.length,
+        _buf = [...list];
 
   final List<T> _buf;
-  final int _capacity;
+
+  /// Maximum number of elements of [CircularBuffer]
+  final int capacity;
 
   int _start = 0;
-  int _end;
-  int _count;
 
-  /// The [CircularBuffer] is `reset`
+  /// Resets the [CircularBuffer].
+  ///
+  /// [capacity] is unaffected.
   void reset() {
     _start = 0;
-    _end = -1;
-    _count = 0;
+    _buf.clear();
   }
+
+  /// An alias to [reset].
+  @override
+  void clear() => reset();
 
   @override
   void add(T element) {
-    // Adding the next value
-    _end++;
-    if (_end == _capacity) {
-      _end = 0;
-    }
-    if (isFilled) {
-      _buf[_end] = element;
-    } else {
+    if (isUnfilled) {
+      // The internal buffer is not at its maximum size.  Grow it.
+      assert(_start == 0, 'Internal buffer grown from a bad state');
       _buf.add(element);
-      _count++;
       return;
     }
 
+    // All space is used, so overwrite the start.
+    _buf[_start] = element;
     _start++;
-    if (_start == _capacity) {
+    if (_start == capacity) {
       _start = 0;
     }
   }
 
-  /// Number of elements of [CircularBuffer]
+  /// Number of used elements of [CircularBuffer]
   @override
-  int get length => _count;
+  int get length => _buf.length;
 
-  /// Maximum number of elements of [CircularBuffer]
-  int get capacity => _capacity;
+  /// The [CircularBuffer] `isFilled` if the [length]
+  /// is equal to the [capacity].
+  bool get isFilled => _buf.length == capacity;
 
-  /// The [CircularBuffer] `isFilled`  if the `length`
-  /// is equal to the `capacity`
-  bool get isFilled => _count == _capacity;
-
-  /// The [CircularBuffer] `isUnfilled`  if the `length` is
-  /// is less than the `capacity`
-  bool get isUnfilled => _count < _capacity;
+  /// The [CircularBuffer] `isUnfilled` if the [length] is
+  /// less than the [capacity].
+  bool get isUnfilled => _buf.length < capacity;
 
   @override
   T operator [](int index) {
-    if (index >= 0 && index < _count) {
-      return _buf[(_start + index) % _buf.length]!;
+    if (index >= 0 && index < _buf.length) {
+      return _buf[(_start + index) % _buf.length];
     }
     throw RangeError.index(index, this);
   }
 
   @override
   void operator []=(int index, T value) {
-    if (index >= 0 && index < _count) {
+    if (index >= 0 && index < _buf.length) {
       _buf[(_start + index) % _buf.length] = value;
     } else {
       throw RangeError.index(index, this);
@@ -104,6 +100,6 @@ class CircularBuffer<T> with ListMixin<T> {
   /// The `length` mutation is forbidden
   @override
   set length(int newLength) {
-    throw UnsupportedError('Cannot resize immutable CircularBuffer.');
+    throw UnsupportedError('Cannot resize a CircularBuffer.');
   }
 }

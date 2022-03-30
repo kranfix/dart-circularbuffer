@@ -1,5 +1,5 @@
 name: circular_buffer
-version: 0.10.0+1
+version: 0.11.0
 description: >
   A Dart Circular Buffer container based on List with a fixed capacity.
 homepage: https://www.github.com/kranfix/dart-circularbuffer
@@ -10,4 +10,3 @@ environment:
 dev_dependencies:
   test: ^1.16.4
   very_good_analysis: ^2.3.0
-

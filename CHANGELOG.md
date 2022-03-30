@@ -1,3 +1,11 @@
+# 0.11.0
+
+- Made `clear` work.
+
+- Fixed to work with nullable element types.
+
+- Simplified the implementation.
+
 # 0.10.0+1
 
 - Corrected examples in documentation.
