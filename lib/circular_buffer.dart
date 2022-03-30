@@ -15,7 +15,7 @@ import 'dart:collection';
 /// print(buffer.isUnfilled); // false
 ///
 /// buffer.add(4);
-/// print(buffer.first); // 4
+/// print(buffer.first); // 2
 /// ```
 class CircularBuffer<T> with ListMixin<T> {
   /// Creates a [CircularBuffer] with a `capacity`
