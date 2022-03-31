@@ -1,6 +1,8 @@
 # 0.11.0
 
-- Made `clear` work.
+- Fixed incorrect buffer state when adding items after calling `reset`.
+
+- Made `clear` be an alias to `reset` instead of throwing an error.
 
 - Fixed to work with nullable element types.
 
