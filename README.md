@@ -15,5 +15,5 @@ print(buffer.isFilled); // true
 print(buffer.isUnfilled); // false
 
 buffer.add(4);
-print(buffer.first); // 4
+print(buffer.first); // 2
 ```

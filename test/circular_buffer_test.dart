@@ -214,14 +214,28 @@ void main() {
     expect(collectedList3, expectedList3);
   });
 
-  test('when is reset', () {
-    final buffer = CircularBuffer<int>(5)
-      ..add(1)
-      ..add(2)
-      ..reset();
+  group('resetting', () {
+    test('when is reset', () {
+      final buffer = CircularBuffer<int>(5)
+        ..add(1)
+        ..add(2)
+        ..reset();
 
-    expect(buffer.length, 0);
-    expect(buffer.capacity, 5);
+      expect(buffer.length, 0);
+      expect(buffer.capacity, 5);
+    });
+
+    test('adding items after a reset', () {
+      final buffer = CircularBuffer<int>(5)
+        ..add(1)
+        ..add(2)
+        ..reset()
+        ..add(3)
+        ..add(4);
+
+      expect(buffer, [3, 4]);
+      expect(buffer.capacity, 5);
+    });
   });
 
   test('Editing a value with a given index', () {
@@ -268,5 +282,10 @@ void main() {
       buffer.add(6);
       expect(buffer.first, 4);
     });
+  });
+
+  test('nullable elements', () {
+    final buffer = CircularBuffer<int?>(3)..add(null)..add(2);
+    expect(buffer, <int?>[null, 2]);
   });
 }

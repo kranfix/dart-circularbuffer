@@ -1,31 +1,45 @@
+# 0.11.0
+
+- Fixed incorrect buffer state when adding items after calling `reset`.
+
+- Made `clear` be an alias to `reset` instead of throwing an error.
+
+- Fixed to work with nullable element types.
+
+- Simplified the implementation.
+
+# 0.10.0+1
+
+- Corrected examples in documentation.
+
 # 0.10.0 - 2021-08-13
 
-- Adding constructtor `CircularBuffer.of(List<T> list, [int? capacity])`.
+- Added a `CircularBuffer.of(List<T> list, [int? capacity])` constructor.
 
 # 0.9.1
 
-- Adding documentation to `CircularBuffer` class
-- Adding example to README
+- Added documentation to `CircularBuffer` class
+- Added example to README
 
 # 0.9.0
 
-- Migrating to null-safety (Thanks to @shyndman)
-- Adding test for border conditions
+- Migrated to null-safety (thanks to @shyndman)
+- Added test for border conditions
 
 # 0.8.0
 
-- The `CircularBuffer` mininum capacity is 2
-- Adding tests
+- The `CircularBuffer` minimum capacity is 2
+- Added tests
 
 # 0.7.0
 
-- `CircularBuffer` support ListMixin
+- Use `ListMixin`.
 
 # 0.6.0
 
 - Migration to Dart 2.
-- Aadding forEach method.
+- Added forEach method.
 
 # 0.5.0
 
-- A circular buffer made in dart 1.
+- A circular buffer made in Dart 1.
