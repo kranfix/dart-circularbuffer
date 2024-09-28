@@ -34,7 +34,7 @@ class CircularBuffer<T> with ListMixin<T> {
         _buf = [...list],
         _len = list.length;
 
-  final List<T> _buf;
+  final List<dynamic> _buf;
 
   /// Maximum number of elements of [CircularBuffer]
   final int capacity;
@@ -75,13 +75,30 @@ class CircularBuffer<T> with ListMixin<T> {
 
   /// Adds an element as the first element
   void addHead(T element) {
-    if (isFilled) {
+    if (_len == 0) {
+      _buf.add(element);
+      _len++;
+    } else if (isFilled) {
       if (_start == 0) {
         _start = _len - 1;
       } else {
         _start--;
       }
       _buf[_start] = element;
+    } else if (_buf.length < capacity) {
+      _buf
+        ..addAll(_None.iterable(capacity - _len - 1))
+        ..add(element);
+      _len += 1;
+      _start = capacity - 1;
+    } else {
+      if (_start == 0) {
+        _start = _len - 1;
+      } else {
+        _start--;
+      }
+      _buf[_start] = element;
+      _len += 1;
     }
   }
 
@@ -100,7 +117,7 @@ class CircularBuffer<T> with ListMixin<T> {
   @override
   T operator [](int index) {
     if (index >= 0 && index < _len) {
-      return _buf[(_start + index) % _len];
+      return _buf[(_start + index) % _buf.length] as T;
     }
     throw RangeError.index(index, this);
   }
@@ -108,7 +125,7 @@ class CircularBuffer<T> with ListMixin<T> {
   @override
   void operator []=(int index, T value) {
     if (index >= 0 && index < _len) {
-      _buf[(_start + index) % _len] = value;
+      _buf[(_start + index) % _buf.length] = value;
     } else {
       throw RangeError.index(index, this);
     }
@@ -120,3 +137,15 @@ class CircularBuffer<T> with ListMixin<T> {
     throw UnsupportedError('Cannot resize a CircularBuffer.');
   }
 }
+
+class _None {
+  const _None._();
+
+  static Iterable<_None> iterable(int n) sync* {
+    for (var i = 0; i < n; i++) {
+      yield _none;
+    }
+  }
+}
+
+const _none = _None._();
