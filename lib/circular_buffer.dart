@@ -42,18 +42,19 @@ class CircularBuffer<T> with ListMixin<T> {
   int _start = 0;
   int _len;
 
-  /// Resets the [CircularBuffer].
+  /// An alias to [reset].
+  @Deprecated('Use `clear` instead')
+  void reset() => clear();
+
+  /// Clears the [CircularBuffer].
   ///
   /// [capacity] is unaffected.
-  void reset() {
+  @override
+  void clear() {
     _start = 0;
     _buf.clear();
     _len = 0;
   }
-
-  /// An alias to [reset].
-  @override
-  void clear() => reset();
 
   @override
   void add(T element) {
