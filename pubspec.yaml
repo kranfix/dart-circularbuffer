@@ -5,7 +5,7 @@ description: >
 homepage: https://www.github.com/kranfix/dart-circularbuffer
 documentation: https://www.github.com/kranfix/dart-circularbuffer#readme
 environment:
-  sdk: ">=2.13.0 <=4.0.0"
+  sdk: ">=2.13.0 <4.0.0"
 
 dev_dependencies:
   test: ^1.25.8
