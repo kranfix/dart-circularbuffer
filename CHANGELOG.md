@@ -1,3 +1,8 @@
+# 0.12.0
+
+- Added `addHead` method.
+- Deprecated `reset` method in favor of `clear`.
+
 # 0.11.0
 
 - Fixed incorrect buffer state when adding items after calling `reset`.

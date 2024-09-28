@@ -16,4 +16,10 @@ print(buffer.isUnfilled); // false
 
 buffer.add(4);
 print(buffer.first); // 2
+
+buffer.addHead(4);
+print(buffer.length); // 3
+print(buffer[0]); // 4
+print(buffer[1]); // 1
+print(buffer[2]); // 2
 ```

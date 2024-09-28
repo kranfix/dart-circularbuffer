@@ -239,7 +239,9 @@ void main() {
   });
 
   test('Editing a value with a given index', () {
-    final buffer = CircularBuffer<int>(5)..add(1)..add(2);
+    final buffer = CircularBuffer<int>(5)
+      ..add(1)
+      ..add(2);
     buffer[0] = 6;
     buffer[1] = 7;
     expect(buffer[0], 6);
@@ -250,7 +252,9 @@ void main() {
     }, throwsA(isA<IndexError>()));
   });
   test('when modifying length throws an error', () {
-    final buffer = CircularBuffer<int>(5)..add(1)..add(2);
+    final buffer = CircularBuffer<int>(5)
+      ..add(1)
+      ..add(2);
     expect(() {
       buffer.length = 1;
     }, throwsA(isA<UnsupportedError>()));
@@ -258,7 +262,9 @@ void main() {
 
   group('border conditions', () {
     test('is filled or unfilled', () {
-      final buffer = CircularBuffer<int>(3)..add(1)..add(2);
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2);
 
       expect(buffer.isFilled, false);
       expect(buffer.isUnfilled, true);
@@ -269,7 +275,10 @@ void main() {
     });
 
     test('first internal index is retarted', () {
-      final buffer = CircularBuffer<int>(3)..add(1)..add(2)..add(3);
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2)
+        ..add(3);
 
       expect(buffer.first, 1);
 
@@ -285,7 +294,63 @@ void main() {
   });
 
   test('nullable elements', () {
-    final buffer = CircularBuffer<int?>(3)..add(null)..add(2);
+    final buffer = CircularBuffer<int?>(3)
+      ..add(null)
+      ..add(2);
     expect(buffer, <int?>[null, 2]);
+  });
+
+  group('addHead', () {
+    test('should add an element in an empty buffer', () {
+      final buffer = CircularBuffer<int>(3)..addHead(1);
+      expect(buffer[0], 1);
+      expect(buffer.length, 1);
+    });
+
+    test('should add an element in a filled buffer', () {
+      final buffer = CircularBuffer<int>.of([1, 2, 3])..addHead(4);
+      expect(buffer[0], 4);
+      expect(buffer[1], 1);
+      expect(buffer[2], 2);
+
+      buffer.addHead(5);
+      expect(buffer[0], 5);
+      expect(buffer[1], 4);
+      expect(buffer[2], 1);
+    });
+
+    test('should add an element in an almost filled buffer', () {
+      final buffer = CircularBuffer<int>.of([1, 2], 3)..addHead(4);
+      expect(buffer[0], 4);
+      expect(buffer[1], 1);
+      expect(buffer[2], 2);
+    });
+
+    test('should add an element in an almost filled buffer', () {
+      final buffer = CircularBuffer<int>.of([1, 2], 5);
+      expect(buffer.length, 2);
+      expect(buffer.capacity, 5);
+
+      buffer.addHead(4);
+      expect(buffer[0], 4);
+      expect(buffer[1], 1);
+      expect(buffer[2], 2);
+      expect(buffer.length, 3);
+
+      buffer.addHead(5);
+      expect(buffer[0], 5);
+      expect(buffer[1], 4);
+      expect(buffer[2], 1);
+      expect(buffer[3], 2);
+      expect(buffer.length, 4);
+
+      buffer.addHead(6);
+      expect(buffer[0], 6);
+      expect(buffer[1], 5);
+      expect(buffer[2], 4);
+      expect(buffer[3], 1);
+      expect(buffer[4], 2);
+      expect(buffer.length, 5);
+    });
   });
 }
