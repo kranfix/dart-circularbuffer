@@ -13,6 +13,7 @@ void main() {
 
     mean = sum.toDouble() / cb.length;
 
+    // Ignored because this is an example
     // ignore: avoid_print
     print('Inserting $a:\tsum=$sum\tmean=$mean');
   }

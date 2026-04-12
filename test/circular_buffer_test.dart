@@ -89,13 +89,14 @@ void main() {
 
   group('Creating a CircularBuffer.of()', () {
     test('with zero or one element capacity', () {
-      final cb1 = CircularBuffer<int>.of([]);
-      expect(cb1.length, 0);
-      expect(cb1.capacity, 0);
-
-      final cb2 = CircularBuffer<int>.of([], 1);
-      expect(cb2.length, 0);
-      expect(cb2.capacity, 1);
+      expect(
+        () => CircularBuffer<int>.of([]),
+        throwsA(isA<AssertionError>()),
+      );
+      expect(
+        () => CircularBuffer<int>.of([], 1),
+        throwsA(isA<AssertionError>()),
+      );
     });
 
     test('when capacity is less than length, throws an error', () {
@@ -193,9 +194,7 @@ void main() {
       ..add(3);
     final expectedList2 = <int>[1, 2, 3];
     final collectedList2 = <int>[];
-    for (final el in buffer2) {
-      collectedList2.add(el);
-    }
+    buffer2.forEach(collectedList2.add);
     expect(collectedList2, expectedList2);
 
     final buffer3 = CircularBuffer<int>(5)
@@ -208,34 +207,8 @@ void main() {
       ..add(7);
     final expectedList3 = <int>[3, 4, 5, 6, 7];
     final collectedList3 = <int>[];
-    for (final el in buffer3) {
-      collectedList3.add(el);
-    }
+    buffer3.forEach(collectedList3.add);
     expect(collectedList3, expectedList3);
-  });
-
-  group('resetting', () {
-    test('when is reset', () {
-      final buffer = CircularBuffer<int>(5)
-        ..add(1)
-        ..add(2)
-        ..reset();
-
-      expect(buffer.length, 0);
-      expect(buffer.capacity, 5);
-    });
-
-    test('adding items after a reset', () {
-      final buffer = CircularBuffer<int>(5)
-        ..add(1)
-        ..add(2)
-        ..reset()
-        ..add(3)
-        ..add(4);
-
-      expect(buffer, [3, 4]);
-      expect(buffer.capacity, 5);
-    });
   });
 
   test('Editing a value with a given index', () {
@@ -274,7 +247,7 @@ void main() {
       expect(buffer.isUnfilled, false);
     });
 
-    test('first internal index is retarted', () {
+    test('first internal index is restarted', () {
       final buffer = CircularBuffer<int>(3)
         ..add(1)
         ..add(2)
@@ -298,6 +271,97 @@ void main() {
       ..add(null)
       ..add(2);
     expect(buffer, <int?>[null, 2]);
+  });
+
+  group('interleaved add() and addHead()', () {
+    test('addHead then add fills buffer correctly', () {
+      final buffer = CircularBuffer<int>(4)
+        ..add(1)
+        ..add(2)
+        ..addHead(0)
+        ..add(3);
+      expect(buffer, [0, 1, 2, 3]);
+    });
+
+    test('add then addHead on full buffer drops tail', () {
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2)
+        ..add(3)
+        ..addHead(0);
+      expect(buffer, [0, 1, 2]);
+    });
+
+    test('alternating add and addHead on full buffer', () {
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2)
+        ..add(3)
+        ..addHead(0); // drops 3
+      expect(buffer, [0, 1, 2]);
+      buffer.add(4); // drops 0
+      expect(buffer, [1, 2, 4]);
+    });
+  });
+
+  group('operations after clear()', () {
+    test('add() after clear() works correctly', () {
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2)
+        ..add(3)
+        ..clear();
+      expect(buffer.length, 0);
+      expect(buffer.capacity, 3);
+      buffer
+        ..add(4)
+        ..add(5);
+      expect(buffer, [4, 5]);
+    });
+
+    test('addHead() after clear() works correctly', () {
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2)
+        ..add(3)
+        ..clear()
+        ..add(4)
+        ..add(5)
+        ..addHead(3);
+      expect(buffer, [3, 4, 5]);
+    });
+  });
+
+  group('unsupported ListMixin operations', () {
+    test('insert() throws UnsupportedError', () {
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2);
+      expect(
+        () => buffer.insert(0, 0),
+        throwsA(isA<UnsupportedError>()),
+      );
+    });
+
+    test('removeAt() throws UnsupportedError', () {
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2);
+      expect(
+        () => buffer.removeAt(0),
+        throwsA(isA<UnsupportedError>()),
+      );
+    });
+
+    test('removeLast() throws UnsupportedError', () {
+      final buffer = CircularBuffer<int>(3)
+        ..add(1)
+        ..add(2);
+      expect(
+        buffer.removeLast,
+        throwsA(isA<UnsupportedError>()),
+      );
+    });
   });
 
   group('addHead', () {
