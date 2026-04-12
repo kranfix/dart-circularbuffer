@@ -1,6 +1,11 @@
 import 'dart:collection';
 
-/// A [CircularBuffer] with a fixed capacity supporting all [List] operations
+/// A [CircularBuffer] with a fixed capacity.
+///
+/// Supports most [List] read operations and a fixed-size write interface
+/// ([add], [addHead], [clear]). Mutation methods that resize the list
+/// (e.g. [insert], [removeAt], [removeLast]) either throw [UnsupportedError]
+/// or are unsupported.
 ///
 /// ```dart
 /// final buffer = CircularBuffer<int>(3)..add(1)..add(2);
@@ -20,8 +25,8 @@ import 'dart:collection';
 class CircularBuffer<T> with ListMixin<T> {
   /// Creates a [CircularBuffer] with a `capacity`
   CircularBuffer(this.capacity)
-      : assert(capacity > 1, 'CircularBuffer must have a positive capacity.'),
-        _buf = [],
+      : assert(capacity > 1, 'CircularBuffer capacity must be greater than 1.'),
+        _buf = List<Object?>.filled(capacity, _none),
         _len = 0;
 
   /// Creates a [CircularBuffer] based on another `list`
@@ -30,11 +35,16 @@ class CircularBuffer<T> with ListMixin<T> {
           capacity == null || capacity >= list.length,
           'The capacity must be at least as long as the existing list',
         ),
+        assert(
+          (capacity ?? list.length) > 1,
+          'CircularBuffer capacity must be greater than 1.',
+        ),
         capacity = capacity ?? list.length,
-        _buf = [...list],
+        _buf = List<Object?>.filled(capacity ?? list.length, null)
+          ..setRange(0, list.length, list),
         _len = list.length;
 
-  final List<dynamic> _buf;
+  final List<Object?> _buf;
 
   /// Maximum number of elements of [CircularBuffer]
   final int capacity;
@@ -42,65 +52,49 @@ class CircularBuffer<T> with ListMixin<T> {
   int _start = 0;
   int _len;
 
-  /// An alias to [reset].
-  @Deprecated('Use `clear` instead')
-  void reset() => clear();
-
   /// Clears the [CircularBuffer].
   ///
   /// [capacity] is unaffected.
   @override
   void clear() {
+    // Release references so GC can collect stored objects.
+    // Only the _len occupied slots need clearing; they may wrap around.
+    final end = _start + _len;
+    if (end <= capacity) {
+      _buf.fillRange(_start, end, _none);
+    } else {
+      _buf
+        ..fillRange(_start, capacity, _none)
+        ..fillRange(0, end - capacity, _none);
+    }
     _start = 0;
-    _buf.clear();
     _len = 0;
   }
 
   @override
   void add(T element) {
     if (isUnfilled) {
-      // The internal buffer is not at its maximum size.  Grow it.
-      assert(_start == 0, 'Internal buffer grown from a bad state');
-      _buf.add(element);
+      // Place the new element at the next available slot after current content.
+      _buf[(_start + _len) % capacity] = element;
       _len++;
       return;
     }
 
-    // All space is used, so overwrite the start.
+    // Buffer is full: overwrite the oldest element and advance start.
     _buf[_start] = element;
-    _start++;
-    if (_start == capacity) {
-      _start = 0;
-    }
+    _start = (_start + 1) % capacity;
   }
 
-  /// Adds an element as the first element
+  /// Adds an element as the first element.
+  ///
+  /// If the buffer is full, the last (tail) element is dropped.
   void addHead(T element) {
-    if (_len == 0) {
-      _buf.add(element);
-      _len++;
-    } else if (isFilled) {
-      if (_start == 0) {
-        _start = _len - 1;
-      } else {
-        _start--;
-      }
-      _buf[_start] = element;
-    } else if (_buf.length < capacity) {
-      _buf
-        ..addAll(_None.iterable(capacity - _len - 1))
-        ..add(element);
-      _len += 1;
-      _start = capacity - 1;
-    } else {
-      if (_start == 0) {
-        _start = _len - 1;
-      } else {
-        _start--;
-      }
-      _buf[_start] = element;
-      _len += 1;
-    }
+    // Move the start pointer one step back (wrapping around) and write there.
+    // When full this overwrites the old tail slot; when unfilled it claims a
+    // new slot and increments the length.
+    _start = (_start == 0) ? capacity - 1 : _start - 1;
+    _buf[_start] = element;
+    if (isUnfilled) _len++;
   }
 
   /// Number of used elements of [CircularBuffer]
@@ -118,7 +112,7 @@ class CircularBuffer<T> with ListMixin<T> {
   @override
   T operator [](int index) {
     if (index >= 0 && index < _len) {
-      return _buf[(_start + index) % _buf.length] as T;
+      return _buf[(_start + index) % capacity] as T;
     }
     throw RangeError.index(index, this);
   }
@@ -126,7 +120,7 @@ class CircularBuffer<T> with ListMixin<T> {
   @override
   void operator []=(int index, T value) {
     if (index >= 0 && index < _len) {
-      _buf[(_start + index) % _buf.length] = value;
+      _buf[(_start + index) % capacity] = value;
     } else {
       throw RangeError.index(index, this);
     }
@@ -137,16 +131,16 @@ class CircularBuffer<T> with ListMixin<T> {
   set length(int newLength) {
     throw UnsupportedError('Cannot resize a CircularBuffer.');
   }
+
+  /// Inserting into a [CircularBuffer] is not supported.
+  @override
+  void insert(int index, T element) {
+    throw UnsupportedError('Cannot insert into a CircularBuffer.');
+  }
 }
 
 class _None {
   const _None._();
-
-  static Iterable<_None> iterable(int n) sync* {
-    for (var i = 0; i < n; i++) {
-      yield _none;
-    }
-  }
 }
 
 const _none = _None._();
